@@ -9,26 +9,25 @@ class Alt:
 	def __init__(self, xml):
 		pass
 
+def absolutepath(file, path):
+	if path[0] == "/":
+		return path
+	return os.path.dirname(file) + "/" + path
 
 class Hero:
-	def __init__(self, xml, filename, abilities):
+	def __init__(self, xml, filename):
 		self.xml = xml
 		self.filename = filename
 		self.abilities = []
 		for i in range(0,4):
-			if "inventory" + str(i) in abilities:
-				self.abilities.push_back(abilities[xml.get("inventory" + str(i))])
-		self.modelpath = self.absolutepath(xml.get("model"))
+			if "inventory" + str(i) in data.abilities:
+				self.abilities.push_back(data.abilities[xml.get("inventory" + str(i))])
+		self.modelpath = absolutepath(self.filename, xml.get("model"))
 		self.mainModel = model.Model(data.models[self.modelpath])
 
 	def getAlts(self):
 		return [alt.get("key").split(".")[1] if len(alt.get("key").split(".")) > 1 else alt.get("key") for alt in self.xml.findall("altavatar")]
 
-	def absolutepath(self, path):
-		if path[0] == "/":
-			return path
-		return os.path.dirname(self.filename) + "/" + path
-		
 	def generate(self, alt=""):
 		editedfiles = dict()
 
@@ -59,7 +58,8 @@ class Hero:
 				editedxml.remove(toremove)
 		editedxml.extend(list(changes))
 
-		newmodelpath = self.absolutepath(editedxml.get("model"))
+		newmodelpath = absolutepath(self.filename, editedxml.get("model"))
+		print(newmodelpath)
 		newModel = model.Model(data.models[newmodelpath])
 
 		for altTag in editedxml.findall("altavatar"):
@@ -76,17 +76,15 @@ class Hero:
 				projectilesToEdit.append(attackprojectile)
 			if altModelPath is not None:
 				altTag.set("model", altModelPath)
-				altModelPath = self.absolutepath(altModelPath)
+				altModelPath = absolutepath(self.filename, altModelPath)
 				if altModelPath in data.models:
 					attribs = dict()
 					for attribute in ["file", "high", "low", "med"]:
 						if attribute in data.models[newmodelpath].attrib:
-							attribs[attribute] = "/" + self.absolutepath(data.models[newmodelpath].get(attribute))
+							attribs[attribute] = "/" + absolutepath(altModelPath, data.models[newmodelpath].get(attribute))
 					altModel = model.Model(data.models[altModelPath])
 					editedfiles[altModelPath] = xmltree.tostring(newModel.generate(altModel.animorder, attribs, "/" + os.path.dirname(newmodelpath) + "/"), encoding="unicode")
 		editedfiles[self.filename] = xmltree.tostring(editedxml, encoding="unicode")
-
-
 
 		for ability in self.abilities:
 			editedAbility = copy.deepcopy(ability[0])
