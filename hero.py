@@ -24,6 +24,8 @@ class Hero:
 				self.abilities.push_back(data.abilities[xml.get("inventory" + str(i))])
 		self.modelpath = absolutepath(self.filename, xml.get("model"))
 		self.mainModel = model.Model(data.models[self.modelpath])
+		
+		self.projectile = self.xml.get("attackprojectile")
 
 	def getAlts(self):
 		return [alt.get("key").split(".")[1] if len(alt.get("key").split(".")) > 1 else alt.get("key") for alt in self.xml.findall("altavatar")]
@@ -39,16 +41,17 @@ class Hero:
 
 		changes = xmltree.Element("dummy")
 
-		projectile = None
+		newprojectile = self.projectile
 		projectilesToEdit = []
 
 		if "attackprojectile" in self.xml.attrib:
 			projectile = self.xml.get("attackprojectile")
 		for altTag in self.xml.findall("altavatar"):
 			if alt != "" and alt in altTag.get("key"):
-				changes = altTag
+				changes = copy.deepcopy(altTag)
 				if "attackprojectile" in altTag.attrib:
-					projectile = altTag.get("attackprojectile")
+					del changes.attrib["attackprojectile"]
+					newprojectile = altTag.get("attackprojectile")
 				break
 		for key,value in changes.attrib.items():
 			editedxml.set(key, value)
@@ -59,7 +62,6 @@ class Hero:
 		editedxml.extend(list(changes))
 
 		newmodelpath = absolutepath(self.filename, editedxml.get("model"))
-		print(newmodelpath)
 		newModel = model.Model(data.models[newmodelpath])
 
 		for altTag in editedxml.findall("altavatar"):
