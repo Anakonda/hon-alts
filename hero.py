@@ -110,5 +110,42 @@ class Hero:
 				if projectile is not None:
 					altTag.set("projectile", projectile)
 			editedfiles[ability[1]] = xmltree.tostring(editedAbility, encoding="unicode")
+		
+		if newprojectile not in data.projectiles:
+			print(newprojectile, "not found")
+			return editedfiles
+		newprojectileXML = copy.deepcopy(data.projectiles[newprojectile][0])
+		for altTag in newprojectileXML:
+			if alt != "" and alt in altTag.get("key"):
+				for key, value in altTag.attrib.items():
+					newprojectileXML.set(key, value)
+		for item in ["model", "impacteffect", "traileffect"]: #find the rest
+			if item in newprojectileXML.attrib:
+				abspath = absolutepath(data.projectiles[newprojectile][1], newprojectileXML.get(item))
+				if abspath[0] != "/":
+					abspath = "/" + abspath
+				newprojectileXML.set(item, abspath)
+		for altTag in newprojectileXML.findall("altavatar"):
+			key = altTag.get("key")
+			altTag.clear()
+			altTag.set("key", key)
+
+		editedfiles[data.projectiles[newprojectile][1]] = xmltree.tostring(newprojectileXML, encoding="unicode")
+
+		for projectile in projectilesToEdit:
+			xml, file = data.projectiles[projectile]
+			editedProjectileXML = copy.deepcopy(newprojectileXML)
+			for altTag in editedProjectileXML.findall("altavatar"):
+				editedProjectileXML.remove(altTag)
+			for altTag in xml.findall("altavatar"):
+				newElement = xmltree.Element("altavatar", {"key": altTag.get("key")})
+				newElement.tail = "\n"
+				editedProjectileXML.append(newElement)
+			for item in ["model", "impacteffect", "traileffect"]: #find the rest
+				pass
+				#if item in editedProjectileXML.attrib:
+				#	editedProjectileXML.set(item, absolutepath(file, editedProjectileXML.get(item)))
+			editedProjectileXML.set("name", projectile)
+			editedfiles[file] = xmltree.tostring(editedProjectileXML, encoding="unicode")
 
 		return editedfiles
