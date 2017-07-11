@@ -15,6 +15,7 @@ if os.path.exists(builddir):
 os.mkdir(builddir)
 os.mkdir(builddir + "/bin")
 os.mkdir(builddir + "/bin/PyQt5")
+os.mkdir(builddir + "/bin/certifi")
 library = zipfile.PyZipFile(os.path.join(builddir, "library.zip"), mode="w")
 
 print("Compiling wrapper")
@@ -49,6 +50,10 @@ int wmain(int argc , wchar_t *argv[] )
 	PySys_SetArgv(argc, argv);
 
 	PyImport_ImportModule("encodings.idna");
+	
+	PyRun_SimpleString("from runpy import run_module\\n"
+						"run_module('updater')");
+	
 	PyRun_SimpleString("from runpy import run_module\\n"
 						"run_module('main')");
 
@@ -72,22 +77,27 @@ for file in os.listdir(os.path.join(modulepath, 'encodings')):
 
 finder = ModuleFinder()
 finder.run_script("main.py")
+finder.run_script("updater.py")
 
 # For some reason modulefinder does not find these, add them manually
 extramodules = [os.path.join(modulepath, 'site.py'), os.path.join(modulepath, 'encodings/idna.py'), os.path.join(modulepath, 'runpy.py'),
-	os.path.join(modulepath, "site-packages/PyQt5/__init__.py")]
+	os.path.join(modulepath, "site-packages/PyQt5/__init__.py"), os.path.join(modulepath, "queue.py")]
 
 for module in extramodules:
 	finder.run_script(module)
 
 print('Copying files')
 
-shutil.copyfile("main.py", os.path.join(builddir, "main.py"))
+shutil.copyfile("main.py", os.path.join(builddir, "bin/main.py"))
+shutil.copyfile("updater.py", os.path.join(builddir, "bin/updater.py"))
 shutil.copyfile(os.path.join(modulepath, "site-packages/sip.pyd"),  os.path.join(builddir, "bin/sip.pyd"))
 shutil.copyfile(os.path.join(modulepath, "site-packages/PyQt5/QtGui.pyd"), os.path.join(builddir, "bin/PyQt5/QtGui.pyd"))
+shutil.copyfile(os.path.join(modulepath, "queue.py"), os.path.join(builddir, "bin/queue.py"))
 
 library.write(os.path.join(modulepath, 'site.py'), "site.py")
 library.write(os.path.join(modulepath, 'runpy.py'), "runpy.py")
+
+shutil.copyfile(os.path.join(modulepath, "site-packages/certifi/cacert.pem"), os.path.join(builddir, "bin/certifi/cacert.pem"))
 
 def finddlls(exe):
 	re = []
@@ -124,7 +134,7 @@ for name, mod in items:
 		if relativepath not in library.namelist():
 			if relativepath.startswith('site-packages'):
 				relativepath = relativepath[len('site-packages/'):]
-			if "PyQt5" not in relativepath:
+			if "PyQt5" not in relativepath and "certifi" not in relativepath:
 				library.write(file, relativepath)
 			else:
 				shutil.copyfile(file, os.path.join(builddir, 'bin', relativepath))
