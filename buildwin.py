@@ -147,3 +147,5 @@ for name, mod in items:
 for dll in finddlls(os.path.join(builddir, "honalts.exe")):
 	if builddir not in dll:
 		shutil.copyfile(dll, os.path.join(builddir, os.path.split(dll)[1]))
+
+shutil.copytree(os.path.abspath(os.path.join(gccpath, "../../share/qt5/plugins/platforms")), os.path.join(builddir, "platforms"))
