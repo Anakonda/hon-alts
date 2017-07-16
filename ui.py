@@ -40,7 +40,10 @@ class MainWindow(QtWidgets.QMainWindow):
 		self.herolist = QtWidgets.QListWidget(self.cwidget)
 		self.herolist.setSortingEnabled(True)
 		for entityname in data.heroes.keys():
-			self.herolist.addItem(ListItem(entityname))
+			item = ListItem(entityname)
+			if entityname in settings.selectedAlts:
+				item.selectedAlt = settings.selectedAlts[entityname]
+			self.herolist.addItem(item)
 		self.herolist.currentItemChanged.connect(self.heroChanged)
 		self.herolist.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)
 		self.altlist = QtWidgets.QListWidget(self.cwidget)
@@ -51,7 +54,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
 		self.setCentralWidget(self.cwidget)
 
-		exitAction = QtWidgets.QAction("&Exit", self)        
+		exitAction = QtWidgets.QAction("&Exit", self)
 		exitAction.setShortcut("Ctrl+Q")
 		exitAction.setStatusTip("Exit application")
 		exitAction.triggered.connect(QtWidgets.qApp.quit)
@@ -79,11 +82,22 @@ class MainWindow(QtWidgets.QMainWindow):
 
 	def generate(self, checked):
 		modzip = zipfile.ZipFile(os.path.join(settings.honpath, "game/resourcesAutomaticAlts.s2z"), "w")
+		settings.selectedAlts = dict()
 		for i in range(self.herolist.count()):
 			item = self.herolist.item(i)
 			if item.selectedAlt != DEFAULT:
+				settings.selectedAlts[item.entityname] = item.selectedAlt
 				for filename, content in item.hero.generate(item.selectedAlt).items():
 					if content is not None:
 						modzip.writestr(filename, content)
 		modzip.close()
+		
+		settingsfile = open(settings.__file__, "w")
+		settingsfile.write("honpath = '")
+		settingsfile.write(settings.honpath)
+		settingsfile.write("'\n\nselectedAlts = ")
+		settingsfile.write(str(settings.selectedAlts))
+		settingsfile.write("\n")
+		settingsfile.close()
+
 		print("Generating done")

@@ -112,9 +112,9 @@ class Hero:
 			editedfiles[ability[1]] = xmltree.tostring(editedAbility, encoding="unicode")
 		
 		if self.projectile is not None:
-				if newprojectile not in data.projectiles:
-					print("warning: projectile", newprojectile, "not found")
-					return editedfiles
+			if newprojectile not in data.projectiles:
+				print("warning: projectile", newprojectile, "not found")
+				return editedfiles
 			newprojectileXML = copy.deepcopy(data.projectiles[newprojectile][0])
 			for altTag in newprojectileXML:
 				if alt != "" and alt in altTag.get("key"):
