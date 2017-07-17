@@ -21,7 +21,6 @@ class Hero:
 		self.abilities = []
 		for i in range(0,4):
 			if self.xml.get("inventory" + str(i)) in data.abilities:
-				print(data.abilities[xml.get("inventory" + str(i))])
 				self.abilities.append(data.abilities[xml.get("inventory" + str(i))])
 		self.modelpath = absolutepath(self.filename, xml.get("model"))
 		self.mainModel = model.Model(data.models[self.modelpath])
