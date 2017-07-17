@@ -20,8 +20,9 @@ class Hero:
 		self.filename = filename
 		self.abilities = []
 		for i in range(0,4):
-			if "inventory" + str(i) in data.abilities:
-				self.abilities.push_back(data.abilities[xml.get("inventory" + str(i))])
+			if self.xml.get("inventory" + str(i)) in data.abilities:
+				print(data.abilities[xml.get("inventory" + str(i))])
+				self.abilities.append(data.abilities[xml.get("inventory" + str(i))])
 		self.modelpath = absolutepath(self.filename, xml.get("model"))
 		self.mainModel = model.Model(data.models[self.modelpath])
 		
@@ -111,7 +112,7 @@ class Hero:
 					if projectile is not None:
 						altTag.set("projectile", projectile)
 				editedfiles[ability[1]] = xmltree.tostring(editedAbility, encoding="unicode")
-			
+
 			if self.projectile is not None:
 				if newprojectile not in data.projectiles:
 					print("warning: projectile", newprojectile, "not found")
@@ -154,6 +155,8 @@ class Hero:
 				editedfiles[file] = xmltree.tostring(editedProjectileXML, encoding="unicode")
 
 			return editedfiles
+
 		except Exception as e:
-			print("Failed to generate avatar", alt, "of hero", data.translations[self.xml.attrib["name"]])
 			print(type(e).__name__)
+			print("Failed to generate avatar", alt, "of hero", data.translations[self.xml.attrib["name"] + "_name"])
+			return {}

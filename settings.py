@@ -1,3 +1,3 @@
 honpath = 'C:\Program Files (x86)\Heroes of Newerth'
 
-selectedAlts = dict()
+selectedAlts = {'Hero_Aluna': 'Alt3'}
