@@ -3,10 +3,23 @@ import os
 import xml.etree.ElementTree as xmltree
 import sys
 
-import hero
+
+try:
+	import settings
+except ImportError:
+	print("Settings not found, Using default hon dir. To change it edit", os.path.join(os.path.dirname(__file__), "settings.py"))
+	settingsfile = open(os.path.join(os.path.dirname(__file__), "settings.py"), "w")
+	settingsfile.write("honpath = '")
+	settingsfile.write(r"C:\\Program Files (x86)\\Heroes of Newerth")
+	settingsfile.write("'\n\nselectedAlts = ")
+	settingsfile.write(str({}))
+	settingsfile.write("\n")
+	settingsfile.close()
+	import settings
+
 import data
-import settings
 import ui
+import hero
 
 import PyQt5
 import PyQt5.QtWidgets
