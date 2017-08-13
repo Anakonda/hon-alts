@@ -33,7 +33,6 @@ class MainWindow(QtWidgets.QMainWindow):
 
 		self.show()
 
-
 	def draw(self):
 		self.cwidget = QtWidgets.QWidget()
 		layout = QtWidgets.QHBoxLayout(self.cwidget)
@@ -69,6 +68,11 @@ class MainWindow(QtWidgets.QMainWindow):
 		fileMenu.addAction(generateAction)
 		fileMenu.addAction(exitAction)
 
+		defaultAll = QtWidgets.QAction("default", self)
+		defaultAll.triggered.connect(self.defaultAll)
+		selectMenu = menubar.addMenu("Select")
+		selectMenu.addAction(defaultAll)
+
 	def heroChanged(self, new, previous):
 		items = [DEFAULT, "default alt"] + new.hero.getAlts()
 		self.altlist.clear()
@@ -91,7 +95,7 @@ class MainWindow(QtWidgets.QMainWindow):
 					if content is not None:
 						modzip.writestr(filename, content)
 		modzip.close()
-		
+
 		settingsfile = open(settings.__file__, "w")
 		settingsfile.write("honpath = '")
 		settingsfile.write(settings.honpath)
@@ -101,3 +105,8 @@ class MainWindow(QtWidgets.QMainWindow):
 		settingsfile.close()
 
 		print("Generating done")
+
+	def defaultAll(self, checked):
+		for i in range(self.herolist.count()):
+			self.herolist.item(i).selectedAlt = DEFAULT
+		self.altlist.setCurrentItem(self.altlist.findItems(DEFAULT, QtCore.Qt.MatchExactly)[0])

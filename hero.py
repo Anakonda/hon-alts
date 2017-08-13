@@ -5,10 +5,6 @@ import data
 import model
 import os
 
-class Alt:
-	def __init__(self, xml):
-		pass
-
 def absolutepath(file, path):
 	if path[0] == "/":
 		return path
@@ -107,7 +103,7 @@ class Hero:
 					projectile = altTag.get("projectile")
 					altTag.clear()
 					altTag.tail = "\n"
-					altTag.set("name", name)
+					altTag.set("key", name)
 					if projectile is not None:
 						altTag.set("projectile", projectile)
 				editedfiles[ability[1]] = xmltree.tostring(editedAbility, encoding="unicode")
