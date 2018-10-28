@@ -7,7 +7,7 @@ import os
 
 def absolutepath(file, path):
 	if path[0] == "/":
-		return path
+		return path[1:]
 	return os.path.dirname(file) + "/" + path
 
 class Hero:

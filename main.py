@@ -69,7 +69,7 @@ for resource in resources:
 			data.models[file] = xmltree.fromstring(zip.open(file).read().decode("utf-8"))
 
 print("ui")
-			
+
 app = PyQt5.QtWidgets.QApplication(sys.argv)
 window = ui.MainWindow()
 app.exec_()

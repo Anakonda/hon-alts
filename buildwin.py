@@ -6,7 +6,6 @@ from modulefinder import ModuleFinder
 import zipfile
 
 # Creates standalone Windows executable
-# First build by following instructions from installation.rst
 
 builddir = "win32exe"
 

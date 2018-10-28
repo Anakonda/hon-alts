@@ -1,5 +1,6 @@
 import zipfile
 import os
+import sys
 
 import data
 import hero
@@ -20,7 +21,12 @@ class ListItem(QtWidgets.QListWidgetItem):
 		QtWidgets.QListWidgetItem.__init__(self, self.displayname)
 		self.selectedAlt = DEFAULT
 		self.entityname = entityname
-		self.hero = hero.Hero(data.heroes[entityname][0], data.heroes[entityname][1])
+		try:
+			self.hero = hero.Hero(data.heroes[entityname][0], data.heroes[entityname][1])
+		except Exception as e:
+			print("Failed to parse hero {hero} from file {file}".format(hero=self.displayname, file=data.heroes[entityname][1]))
+			type, value, traceback = sys.exc_info()
+			print(type.__name__, value)
 
 
 class MainWindow(QtWidgets.QMainWindow):
