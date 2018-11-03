@@ -4,6 +4,7 @@ import copy
 import data
 import model
 import os
+import sys
 
 def absolutepath(file, path):
 	if path[0] == "/":
@@ -132,7 +133,7 @@ class Hero:
 
 			for projectile in projectilesToEdit:
 				if projectile not in data.projectiles:
-					print("Warning:", projectile, "for hero", data.translations[self.xml.attrib["name"]], "seems to be missing.\nTry in no stats before using.")
+					print("Warning:", projectile, "for hero", data.translations[self.xml.attrib["name"] + "_name"], "seems to be missing.\nTry in no stats before using.")
 					continue
 				xml, file = data.projectiles[projectile]
 				editedProjectileXML = copy.deepcopy(newprojectileXML)
