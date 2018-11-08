@@ -14,11 +14,14 @@ if os.path.exists(os.path.join(os.path.dirname(__file__), ".git")):
 	sys.exit(0)
 
 request = requests.get("http://api.github.com/repos/" + user + "/" + repo + "/commits/" + branch, headers={"Accept": "application/vnd.github.v3.sha"})
+print("Latest commit id on github: " + request.text)
+
 
 uptodate = False
 
 try:
 	import version
+	print("Local version id: " + version.version)
 	if version.version == request.text:
 		uptodate = True
 except ImportError:
